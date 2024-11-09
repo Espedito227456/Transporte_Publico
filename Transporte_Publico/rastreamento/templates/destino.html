@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rota em Assis, SP</title>
+    <style>
+        /* Define o tamanho do mapa */
+        #map {
+            height: 500px;
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <h3>Mapa com Rota em Assis, SP</h3>
+    <!-- Exemplo de formulário em destino.html -->
+    <!-- destino.html -->
+    <form method="POST">
+        {% csrf_token %}
+        <label for="origem">Origem:</label>
+        <input type="text" id="origem" name="origem" required><br>
+    
+        <label for="destino">Destino:</label>
+        <input type="text" id="destino" name="destino" required><br>
+    
+        <button type="submit">Calcular Rota</button>
+    </form>
+    
+    <!-- Exemplo de mapa para exibir a rota -->
+    <div id="map" style="height: 500px; width: 100%;"></div>
+
+   
+
+
+    <script>
+        let map, directionsService, directionsRenderer;
+
+        // Função de inicialização do mapa
+        function initMap() {
+            // Cria o mapa centrado em Assis, SP
+            map = new google.maps.Map(document.getElementById("map"), {
+                center: { lat: -22.6638, lng: -50.4116 },  // Coordenadas de Assis, SP
+                zoom: 13,
+            });
+
+            // Inicializa o serviço de direções
+            directionsService = new google.maps.DirectionsService();
+            directionsRenderer = new google.maps.DirectionsRenderer();
+            directionsRenderer.setMap(map);
+
+            // Chama a função para calcular a rota
+            calculateRoute();
+        }
+
+        // Função para calcular a rota entre dois pontos
+        function calculateRoute() {
+            var request = {
+                origin: { lat: -22.6638, lng: -50.4116 },  // Ponto de origem (Assis)
+                destination: { lat: -22.6522, lng: -50.3978 },  // Ponto de destino em Assis (exemplo: outro local na cidade)
+                travelMode: google.maps.TravelMode.DRIVING,  // Modo de transporte (carro)
+            };
+
+            // Solicita a rota
+            directionsService.route(request, function (result, status) {
+                if (status === google.maps.DirectionsStatus.OK) {
+                    directionsRenderer.setDirections(result);  // Exibe a rota no mapa
+                } else {
+                    alert("Erro ao calcular a rota: " + status);
+                }
+            });
+        }
+    </script>
+
+    <!-- Adicione a API do Google Maps com a chave da API (substitua YOUR_API_KEY pela sua chave) -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBYxFY3BnHr29c3xIW71HgVUZZJlcj_ujo&callback=initMap" async defer></script>
+</body>
+
+</html>

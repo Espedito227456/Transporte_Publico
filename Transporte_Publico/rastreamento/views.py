@@ -37,3 +37,43 @@ def create_onibus(request):
         form = OnibusForm()
     return render(request, 'create_onibus.html', {'form': form})
 
+def destino(request):
+    if request.method == 'POST':
+        origem = request.POST.get('origem')
+        destino = request.POST.get('destino')
+
+        # Chamar a API do Google Maps para obter a rota
+        api_key = settings.GOOGLE_API_KEY  # Certifique-se de que sua chave da API do Google está configurada no settings.py
+        url = "https://maps.googleapis.com/maps/api/directions/json"
+        
+        params = {
+            'origin': origem,
+            'destination': destino,
+            'key': api_key
+        }
+
+        response = requests.get(url, params=params)
+        data = response.json()
+
+        if data['status'] == 'OK':
+            # Supondo que você queira passar as informações de rota para o template
+            route = data['routes'][0]['legs'][0]
+            duration = route['duration']['text']
+            distance = route['distance']['text']
+            # Você pode adicionar mais informações como etapas da rota, se necessário
+            return render(request, 'destino.html', {
+                'origem': origem,
+                'destino': destino,
+                'duration': duration,
+                'distance': distance,
+                'map_data': data  # Passa o JSON de dados da rota para o template
+            })
+        else:
+            # Em caso de erro
+            return render(request, 'destino.html', {
+                'error': "Não foi possível calcular a rota."
+            })
+    else:
+        return render(request, 'destino.html')
+
+
